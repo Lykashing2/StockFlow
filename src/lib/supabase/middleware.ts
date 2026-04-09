@@ -49,7 +49,6 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   const isAuthRoute = pathname.startsWith('/auth');
-  const isPublicRoute = pathname === '/' || isAuthRoute;
   const isDashboardRoute = pathname.startsWith('/dashboard');
 
   if (!user && isDashboardRoute) {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AlertTriangle, TrendingDown, ArrowUpDown, Package } from 'lucide-react';
 import { formatCurrency, getStockStatus, cn } from '@/lib/utils';
 import { StockAdjustModal } from '../products/StockAdjustModal';
-import type { Product, UserRole } from '@/types';
+import type { Product, UserRole, Category } from '@/types';
 
 interface Props {
   products: Product[];
@@ -12,7 +12,7 @@ interface Props {
   userRole: UserRole;
 }
 
-export function AlertsClient({ products: initialProducts, workspaceId, userRole }: Props) {
+export function AlertsClient({ products: initialProducts, userRole }: Props) {
   const [products, setProducts] = useState(initialProducts);
   const [adjustProduct, setAdjustProduct] = useState<Product | null>(null);
 
@@ -68,9 +68,9 @@ export function AlertsClient({ products: initialProducts, workspaceId, userRole 
             {product.category && (
               <span
                 className="px-2 py-0.5 rounded text-white text-xs"
-                style={{ backgroundColor: (product.category as any).color }}
+                style={{ backgroundColor: (product.category as Category).color }}
               >
-                {(product.category as any).name}
+                {(product.category as Category).name}
               </span>
             )}
           </div>

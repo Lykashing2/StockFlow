@@ -6,12 +6,23 @@ import { StockChart } from '@/components/dashboard/StockChart';
 import { formatCurrency, formatDateTime, getStockStatus, getChangeColor } from '@/lib/utils';
 import Link from 'next/link';
 
+import type { Product } from '@/types';
+
+interface LogWithRelations {
+  id: string;
+  action: string;
+  quantity_change: number;
+  created_at: string;
+  product?: { name: string; sku: string };
+  profile?: { full_name: string | null; email: string };
+}
+
 interface Props {
   stats: { totalProducts: number; totalValue: number; lowStockCount: number; outOfStockCount: number };
-  recentLogs: any[];
-  topProducts: any[];
+  recentLogs: LogWithRelations[];
+  topProducts: Product[];
   chartData: { date: string; added: number; removed: number }[];
-  lowStockProducts: any[];
+  lowStockProducts: Product[];
 }
 
 export function DashboardClient({ stats, recentLogs, topProducts, chartData, lowStockProducts }: Props) {

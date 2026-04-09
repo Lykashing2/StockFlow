@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Plus, Search, Filter, Edit2, Trash2, Package, ArrowUpDown } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { formatCurrency, getStockStatus, cn } from '@/lib/utils';
 import { ProductModal } from './ProductModal';

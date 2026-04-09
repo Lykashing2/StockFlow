@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { SettingsClient } from './SettingsClient';
+import type { Profile, Workspace, UserRole } from '@/types';
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -20,9 +21,9 @@ export default async function SettingsPage() {
   return (
     <DashboardShell title="Settings">
       <SettingsClient
-        profile={profile}
-        workspace={membership?.workspace as any}
-        userRole={membership?.role as any}
+        profile={profile as unknown as Profile}
+        workspace={membership?.workspace as unknown as Workspace}
+        userRole={membership?.role as UserRole}
       />
     </DashboardShell>
   );

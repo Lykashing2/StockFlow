@@ -9,16 +9,18 @@ import { createClient } from '@/lib/supabase/client';
 import { cn, generateSKU } from '@/lib/utils';
 import type { Product, Category } from '@/types';
 
+const toNum = (v: unknown) => (v === '' || v === undefined ? 0 : Number(v));
+
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   sku: z.string().min(1, 'SKU is required'),
   description: z.string().optional(),
   category_id: z.string().optional(),
-  quantity: z.coerce.number().int().min(0),
+  quantity: z.preprocess(toNum, z.number().int().min(0)),
   unit: z.string().min(1),
-  cost_price: z.coerce.number().min(0),
-  selling_price: z.coerce.number().min(0),
-  low_stock_threshold: z.coerce.number().int().min(0),
+  cost_price: z.preprocess(toNum, z.number().min(0)),
+  selling_price: z.preprocess(toNum, z.number().min(0)),
+  low_stock_threshold: z.preprocess(toNum, z.number().int().min(0)),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -36,7 +38,8 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
 
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } =
     useForm<FormData>({
-      resolver: zodResolver(schema),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      resolver: zodResolver(schema) as any,
       defaultValues: product
         ? {
             name: product.name,

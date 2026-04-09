@@ -40,14 +40,12 @@ export default function SignupPage() {
 
   async function onSubmit(data: FormData) {
     setError('');
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: {
           full_name: data.full_name,
-          workspace_name: data.workspace_name,
-          workspace_slug: slugify(data.workspace_name),
         },
       },
     });
@@ -57,8 +55,23 @@ export default function SignupPage() {
       return;
     }
 
+    // Create workspace for the new user
+    if (signUpData.user) {
+      const { error: wsError } = await supabase.rpc('create_workspace', {
+        p_name: data.workspace_name,
+        p_slug: slugify(data.workspace_name) + '-' + Date.now().toString(36),
+      });
+      if (wsError) {
+        setError('Account created but workspace failed: ' + wsError.message);
+        return;
+      }
+    }
+
     setSuccess(true);
-    setTimeout(() => router.push('/dashboard'), 2000);
+    setTimeout(() => {
+      router.push('/dashboard');
+      router.refresh();
+    }, 1500);
   }
 
   if (success) {

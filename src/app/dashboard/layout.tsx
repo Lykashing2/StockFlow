@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/auth/login');
 
-  // Check if user has a workspace — if not, create a default one
+  // Check if user has a workspace — if not, create one
   const { data: membership } = await supabase
     .from('workspace_members')
     .select('id')
@@ -17,11 +17,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .single();
 
   if (!membership) {
-    const name = user.user_metadata?.full_name
-      ? `${user.user_metadata.full_name}'s Workspace`
-      : 'My Workspace';
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36);
-    await supabase.rpc('create_workspace', { p_name: name, p_slug: slug });
+    const wsName = user.user_metadata?.workspace_name
+      || (user.user_metadata?.full_name ? `${user.user_metadata.full_name}'s Workspace` : 'My Workspace');
+    const slug = wsName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36);
+    await supabase.rpc('create_workspace', { p_name: wsName, p_slug: slug });
   }
 
   return (

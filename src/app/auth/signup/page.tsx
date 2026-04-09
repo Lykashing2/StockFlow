@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { Package, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { cn, slugify } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 const schema = z
   .object({
@@ -40,12 +40,13 @@ export default function SignupPage() {
 
   async function onSubmit(data: FormData) {
     setError('');
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: {
           full_name: data.full_name,
+          workspace_name: data.workspace_name,
         },
       },
     });
@@ -55,23 +56,8 @@ export default function SignupPage() {
       return;
     }
 
-    // Create workspace for the new user
-    if (signUpData.user) {
-      const { error: wsError } = await supabase.rpc('create_workspace', {
-        p_name: data.workspace_name,
-        p_slug: slugify(data.workspace_name) + '-' + Date.now().toString(36),
-      });
-      if (wsError) {
-        setError('Account created but workspace failed: ' + wsError.message);
-        return;
-      }
-    }
-
+    // Workspace is auto-created when user first visits /dashboard
     setSuccess(true);
-    setTimeout(() => {
-      router.push('/dashboard');
-      router.refresh();
-    }, 1500);
   }
 
   if (success) {
@@ -81,8 +67,13 @@ export default function SignupPage() {
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Package className="h-8 w-8 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Account created!</h2>
-          <p className="text-gray-500 text-sm">Redirecting to your dashboard…</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Check your email!</h2>
+          <p className="text-gray-500 text-sm mb-4">
+            We sent a confirmation link to your email address. Click it to activate your account.
+          </p>
+          <Link href="/auth/login" className="text-indigo-600 font-medium text-sm hover:text-indigo-700">
+            Go to login
+          </Link>
         </div>
       </div>
     );

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,7 +25,6 @@ const schema = z
 type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
-  const router = useRouter();
   const supabase = createClient();
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');

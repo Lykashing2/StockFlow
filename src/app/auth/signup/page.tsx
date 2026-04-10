@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/client';
-import { Package, Eye, EyeOff, Loader2, Mail, RefreshCw } from 'lucide-react';
+import { Package, Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const schema = z
@@ -25,13 +25,10 @@ const schema = z
 type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
-  const supabase = createClient();
+  const router = useRouter();
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [successEmail, setSuccessEmail] = useState('');
-  const [resending, setResending] = useState(false);
-  const [resendMsg, setResendMsg] = useState('');
 
   const {
     register,
@@ -41,39 +38,29 @@ export default function SignupPage() {
 
   async function onSubmit(data: FormData) {
     setError('');
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        data: {
-          full_name: data.full_name,
-          workspace_name: data.workspace_name,
-        },
-      },
+
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: data.email,
+        password: data.password,
+        full_name: data.full_name,
+        workspace_name: data.workspace_name,
+      }),
     });
 
-    if (signUpError) {
-      setError(signUpError.message);
+    const result = await res.json();
+
+    if (!res.ok) {
+      setError(result.error || 'Something went wrong');
       return;
     }
 
-    setSuccessEmail(data.email);
     setSuccess(true);
-  }
-
-  async function resendEmail() {
-    setResending(true);
-    setResendMsg('');
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: successEmail,
-    });
-    setResending(false);
-    if (error) {
-      setResendMsg('Could not resend. Please wait a minute and try again.');
-    } else {
-      setResendMsg('Email sent! Check your inbox and spam folder.');
-    }
+    setTimeout(() => {
+      router.push('/auth/login');
+    }, 2000);
   }
 
   if (success) {
@@ -81,41 +68,12 @@ export default function SignupPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md w-full">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Mail className="h-8 w-8 text-emerald-600" />
+            <CheckCircle className="h-8 w-8 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Check your email!</h2>
-          <p className="text-gray-500 text-sm mb-1">
-            We sent a confirmation link to:
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Account created!</h2>
+          <p className="text-gray-500 text-sm">
+            Redirecting you to login…
           </p>
-          <p className="text-indigo-600 font-semibold text-sm mb-4">{successEmail}</p>
-          <p className="text-gray-400 text-xs mb-6">
-            Can&apos;t find it? Check your <strong>spam or junk folder</strong>.
-          </p>
-
-          {resendMsg && (
-            <div className={cn(
-              'mb-4 p-3 rounded-lg text-sm',
-              resendMsg.includes('sent') ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'
-            )}>
-              {resendMsg}
-            </div>
-          )}
-
-          <button
-            onClick={resendEmail}
-            disabled={resending}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-60 font-semibold rounded-lg transition text-sm mb-4"
-          >
-            {resending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" />Sending…</>
-            ) : (
-              <><RefreshCw className="h-4 w-4" />Resend confirmation email</>
-            )}
-          </button>
-
-          <Link href="/auth/login" className="text-gray-400 text-sm hover:text-gray-600">
-            Go to login
-          </Link>
         </div>
       </div>
     );

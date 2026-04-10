@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { DashboardClient } from './DashboardClient';
+import { CreateWorkspaceButton } from './CreateWorkspaceButton';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -9,18 +10,21 @@ export default async function DashboardPage() {
   if (!user) redirect('/auth/login');
 
   // Fetch workspace for this user
-  const { data: membership } = await supabase
+  const { data: memberships } = await supabase
     .from('workspace_members')
     .select('workspace_id, workspaces(id, name)')
     .eq('user_id', user.id)
-    .limit(1)
-    .single();
+    .limit(1);
+
+  const membership = memberships?.[0];
 
   if (!membership) {
     return (
       <DashboardShell title="Dashboard">
         <div className="flex flex-col items-center justify-center h-64 text-center">
-          <p className="text-gray-500 mb-4">No workspace found. Please create one to get started.</p>
+          <p className="text-gray-500 mb-2">No workspace found.</p>
+          <p className="text-gray-400 text-sm mb-6">Create a workspace to start managing your inventory.</p>
+          <CreateWorkspaceButton defaultName={user.user_metadata?.workspace_name} />
         </div>
       </DashboardShell>
     );

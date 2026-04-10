@@ -97,7 +97,7 @@ export default function LandingPage() {
             </div>
             <span className="font-bold text-sm">StockFlow</span>
           </div>
-          <p className="text-slate-500 text-xs">© {new Date().getFullYear()} StockFlow. All rights reserved.</p>
+          <p className="text-slate-500 text-xs">© {new Date().getFullYear()} StockFlow. Built by Phearun Lykashing. All rights reserved.</p>
         </div>
       </footer>
     </div>

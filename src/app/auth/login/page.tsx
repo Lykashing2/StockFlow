@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 const schema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  remember_me: z.boolean().optional(),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -112,7 +113,16 @@ export default function LoginPage() {
               )}
             </div>
 
-            <div className="flex items-center justify-end">
+            {/* Remember me + Forgot password */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  {...register('remember_me')}
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+                <span className="text-sm text-gray-600">Remember me</span>
+              </label>
               <Link
                 href="/auth/forgot-password"
                 className="text-sm text-indigo-600 hover:text-indigo-700"

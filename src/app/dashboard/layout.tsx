@@ -9,14 +9,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!user) redirect('/auth/login');
 
   // Check if user has a workspace — if not, create one
-  const { data: membership } = await supabase
+  const { data: memberships } = await supabase
     .from('workspace_members')
     .select('id')
     .eq('user_id', user.id)
-    .limit(1)
-    .single();
+    .limit(1);
 
-  if (!membership) {
+  if (!memberships || memberships.length === 0) {
     const wsName = user.user_metadata?.workspace_name
       || (user.user_metadata?.full_name ? `${user.user_metadata.full_name}'s Workspace` : 'My Workspace');
     const slug = wsName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36);

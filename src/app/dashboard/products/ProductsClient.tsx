@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown, Download } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { formatCurrency, getStockStatus, cn } from '@/lib/utils';
+import { exportToCSV } from '@/lib/csv';
 import { ProductModal } from './ProductModal';
 import { StockAdjustModal } from './StockAdjustModal';
 import type { Product, Category, UserRole } from '@/types';
@@ -78,6 +79,20 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
     setAdjustProduct(null);
   }
 
+  function handleExportCSV() {
+    const rows = filtered.map((p) => ({
+      name: p.name,
+      sku: p.sku,
+      category: p.category?.name ?? '',
+      quantity: p.quantity,
+      unit: p.unit,
+      cost_price: p.cost_price,
+      selling_price: p.selling_price,
+      low_stock_threshold: p.low_stock_threshold,
+    }));
+    exportToCSV(rows, 'products');
+  }
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -110,6 +125,13 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
             <option value="low">Low Stock</option>
             <option value="out">Out of Stock</option>
           </select>
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-1.5 px-4 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg transition"
+          >
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
           {canEdit && (
             <button
               onClick={() => { setEditProduct(null); setShowModal(true); }}

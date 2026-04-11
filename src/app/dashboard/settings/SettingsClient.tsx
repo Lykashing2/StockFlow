@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Building2, Loader2, Check, ArrowUpRight, Lock, AlertCircle } from 'lucide-react';
+import { User, Building2, Loader2, Check, ArrowUpRight, Lock, AlertCircle, CreditCard } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn, slugify } from '@/lib/utils';
 import Link from 'next/link';
@@ -170,6 +170,71 @@ export function SettingsClient({ profile, workspace, userRole }: Props) {
                 wsSaved ? <><Check className="h-4 w-4" />Saved!</> : 'Save changes'}
             </button>
           )}
+        </form>
+      </div>
+
+      {/* Security */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="font-semibold text-gray-900 mb-5 flex items-center gap-2">
+          <Lock className="h-4 w-4 text-indigo-600" /> Security
+        </h3>
+        <form onSubmit={pwForm.handleSubmit(changePassword)} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">Current password</label>
+            <input
+              type="password"
+              {...pwForm.register('current_password')}
+              className={inputCls(pwForm.formState.errors.current_password)}
+            />
+            {pwForm.formState.errors.current_password && (
+              <p className="mt-1 text-xs text-red-500">{pwForm.formState.errors.current_password.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">New password</label>
+            <input
+              type="password"
+              {...pwForm.register('new_password')}
+              className={inputCls(pwForm.formState.errors.new_password)}
+            />
+            {pwForm.formState.errors.new_password && (
+              <p className="mt-1 text-xs text-red-500">{pwForm.formState.errors.new_password.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">Confirm new password</label>
+            <input
+              type="password"
+              {...pwForm.register('confirm_password')}
+              className={inputCls(pwForm.formState.errors.confirm_password)}
+            />
+            {pwForm.formState.errors.confirm_password && (
+              <p className="mt-1 text-xs text-red-500">{pwForm.formState.errors.confirm_password.message}</p>
+            )}
+          </div>
+          {pwError && (
+            <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {pwError}
+            </div>
+          )}
+          {pwSuccess && (
+            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+              <Check className="h-4 w-4 shrink-0" />
+              Password updated successfully.
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={pwForm.formState.isSubmitting}
+            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold rounded-lg transition text-sm"
+          >
+            {pwForm.formState.isSubmitting ? (
+              <><Loader2 className="h-4 w-4 animate-spin" />Updating...</>
+            ) : (
+              'Update password'
+            )}
+          </button>
         </form>
       </div>
 

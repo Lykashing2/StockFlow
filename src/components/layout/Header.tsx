@@ -23,19 +23,21 @@ export function Header({ onMenuClick, title }: HeaderProps) {
           <Menu className="h-5 w-5" />
         </button>
         {title && (
-          <h1 className="text-lg font-semibold text-gray-900 hidden sm:block">{title}</h1>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white hidden sm:block">{title}</h1>
         )}
       </div>
 
       <div className="flex items-center gap-2">
         {/* Search (decorative on mobile — full on desktop) */}
-        <div className="hidden md:flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2 w-56">
+        <div className="hidden md:flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 w-56">
           <Search className="h-4 w-4 text-gray-400" />
           <span className="text-sm text-gray-400">Search…</span>
         </div>
 
+        <ThemeToggle />
+
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition">
+        <button className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition">
           <Bell className="h-5 w-5" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
         </button>
@@ -46,10 +48,10 @@ export function Header({ onMenuClick, title }: HeaderProps) {
             {profile?.full_name ? getInitials(profile.full_name) : '?'}
           </div>
           <div className="hidden sm:block">
-            <p className="text-sm font-medium text-gray-900 leading-none">
+            <p className="text-sm font-medium text-gray-900 dark:text-white leading-none">
               {profile?.full_name ?? profile?.email ?? 'User'}
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">{workspace?.plan ?? 'free'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{workspace?.plan ?? 'free'}</p>
           </div>
         </div>
       </div>

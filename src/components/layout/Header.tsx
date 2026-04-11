@@ -1,9 +1,10 @@
 'use client';
 
-import { Menu, Bell, Search } from 'lucide-react';
+import { Menu, Bell } from 'lucide-react';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { getInitials } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { GlobalSearch } from '@/components/layout/GlobalSearch';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -28,11 +29,7 @@ export function Header({ onMenuClick, title }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Search (decorative on mobile — full on desktop) */}
-        <div className="hidden md:flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 w-56">
-          <Search className="h-4 w-4 text-gray-400" />
-          <span className="text-sm text-gray-400">Search…</span>
-        </div>
+        <GlobalSearch />
 
         <ThemeToggle />
 

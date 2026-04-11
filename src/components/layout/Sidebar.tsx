@@ -13,6 +13,7 @@ import {
   X,
   ChevronDown,
   Check,
+  MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -142,8 +143,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Sign out */}
-        <div className="px-3 py-4 border-t border-slate-700">
+        {/* Footer links */}
+        <div className="px-3 py-4 border-t border-slate-700 space-y-1">
+          <Link
+            href="/feedback"
+            onClick={onClose}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition"
+          >
+            <MessageSquare className="h-4 w-4" />
+            Send Feedback
+          </Link>
           <button
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition"

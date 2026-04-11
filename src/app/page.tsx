@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, BarChart3, Bell, Users, Smartphone, Shield, UserPlus, PackagePlus, TrendingUp } from 'lucide-react';
+import { Package, BarChart3, Bell, Users, Smartphone, Shield, UserPlus, PackagePlus, TrendingUp, ScanBarcode } from 'lucide-react';
 
 const features = [
   { icon: Package, title: 'Product Management', desc: 'Add, edit, and track products with SKUs, categories, and pricing.' },
@@ -25,6 +25,9 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link href="/pricing" className="text-slate-300 hover:text-white text-sm font-medium transition">
               Pricing
+            </Link>
+            <Link href="/feedback" className="text-slate-300 hover:text-white text-sm font-medium transition">
+              Feedback
             </Link>
             <Link href="/auth/login" className="text-slate-300 hover:text-white text-sm font-medium transition">
               Sign in
@@ -63,6 +66,20 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Built with */}
+      <section className="px-4 lg:px-8 pb-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-4">Powered by modern, reliable infrastructure</p>
+          <div className="flex items-center justify-center gap-8 flex-wrap">
+            {['Next.js', 'Supabase', 'Vercel', 'TypeScript', 'Tailwind CSS'].map((tech) => (
+              <span key={tech} className="text-slate-500 hover:text-slate-300 text-sm font-medium transition cursor-default">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="px-4 lg:px-8 pb-20">
         <div className="max-w-6xl mx-auto">
@@ -90,7 +107,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {[
               { step: 1, icon: UserPlus, title: 'Sign up in seconds', desc: 'Create your free account. No credit card required.' },
-              { step: 2, icon: PackagePlus, title: 'Add your products', desc: 'Import or manually add your inventory with SKUs, pricing, and categories.' },
+              { step: 2, icon: ScanBarcode, title: 'Add your products', desc: 'Bulk import via CSV, scan barcodes, or manually add products with SKUs and pricing.' },
               { step: 3, icon: TrendingUp, title: 'Track & grow', desc: 'Get real-time insights, low stock alerts, and team collaboration.' },
             ].map(({ step, icon: Icon, title, desc }) => (
               <div key={step} className="text-center">
@@ -131,9 +148,10 @@ export default function LandingPage() {
       <section className="px-4 lg:px-8 pb-20">
         <div className="max-w-2xl mx-auto bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-10 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">Ready to take control of your inventory?</h2>
-          <p className="text-indigo-100 mb-6">Join thousands of businesses using StockFlow.</p>
+          <p className="text-indigo-100 mb-2">Start with up to 50 products free. No credit card required.</p>
+          <p className="text-indigo-200 text-sm mb-6">Set up in under 2 minutes.</p>
           <Link href="/auth/signup" className="inline-block px-8 py-3.5 bg-white text-indigo-700 font-bold rounded-xl hover:bg-indigo-50 transition">
-            Create your free account
+            Get started free
           </Link>
         </div>
       </section>
@@ -167,6 +185,7 @@ export default function LandingPage() {
               <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Company</h4>
               <ul className="space-y-2">
                 <li><a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition">About</a></li>
+                <li><Link href="/feedback" className="text-slate-500 hover:text-slate-300 text-sm transition">Feedback</Link></li>
               </ul>
             </div>
             {/* Legal */}

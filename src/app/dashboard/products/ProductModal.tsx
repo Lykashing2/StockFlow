@@ -14,6 +14,7 @@ const toNum = (v: unknown) => (v === '' || v === undefined ? 0 : Number(v));
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   sku: z.string().min(1, 'SKU is required'),
+  barcode: z.string().optional(),
   description: z.string().optional(),
   category_id: z.string().optional(),
   quantity: z.preprocess(toNum, z.number().int().min(0)),
@@ -44,6 +45,7 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
         ? {
             name: product.name,
             sku: product.sku,
+            barcode: product.barcode ?? '',
             description: product.description ?? '',
             category_id: product.category_id ?? '',
             quantity: product.quantity,
@@ -65,6 +67,7 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
       workspace_id: workspaceId,
       category_id: data.category_id || null,
       description: data.description || null,
+      barcode: data.barcode || null,
     };
 
     if (isEdit && product) {
@@ -128,6 +131,11 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
               <label className="block text-xs font-medium text-gray-700 mb-1">SKU *</label>
               <input {...register('sku')} className={inputCls(errors.sku)} placeholder="e.g. BLU-001" />
               {errors.sku && <p className="mt-1 text-xs text-red-500">{errors.sku.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Barcode / UPC</label>
+              <input {...register('barcode')} className={inputCls()} placeholder="e.g. 012345678901" />
             </div>
 
             <div>

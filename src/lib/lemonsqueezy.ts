@@ -14,8 +14,8 @@ export function configureLemonSqueezy() {
  * Replace these with your actual variant IDs from the LemonSqueezy dashboard.
  */
 export const PLAN_VARIANT_IDS: Record<string, number> = {
-  pro: 000000,      // TODO: Replace with your Pro plan variant ID
-  business: 000000, // TODO: Replace with your Business plan variant ID
+  pro: 0,      // TODO: Replace with your Pro plan variant ID
+  business: 0, // TODO: Replace with your Business plan variant ID
 };
 
 export const STORE_ID = process.env.LEMONSQUEEZY_STORE_ID!;

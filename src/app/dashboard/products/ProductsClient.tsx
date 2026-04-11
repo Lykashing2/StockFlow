@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown, Download } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown, Download, Upload } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { formatCurrency, getStockStatus, cn } from '@/lib/utils';
 import { exportToCSV } from '@/lib/csv';
 import { ProductModal } from './ProductModal';
 import { StockAdjustModal } from './StockAdjustModal';
+import { CSVImportModal } from './CSVImportModal';
 import type { Product, Category, UserRole } from '@/types';
 
 interface Props {
@@ -20,8 +22,9 @@ type SortKey = 'name' | 'quantity' | 'cost_price' | 'created_at';
 
 export function ProductsClient({ initialProducts, categories, workspaceId, userRole }: Props) {
   const supabase = createClient();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('q') ?? '');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortKey, setSortKey] = useState<SortKey>('created_at');
@@ -30,6 +33,7 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [adjustProduct, setAdjustProduct] = useState<Product | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
 
   const canEdit = userRole !== 'viewer';
 
@@ -37,7 +41,7 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
     let list = [...products];
     if (search) {
       const q = search.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q));
+      list = list.filter((p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.barcode?.toLowerCase().includes(q));
     }
     if (filterCategory !== 'all') list = list.filter((p) => p.category_id === filterCategory);
     if (filterStatus === 'low') list = list.filter((p) => p.quantity > 0 && p.quantity <= p.low_stock_threshold);
@@ -89,6 +93,7 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
       cost_price: p.cost_price,
       selling_price: p.selling_price,
       low_stock_threshold: p.low_stock_threshold,
+      barcode: p.barcode ?? '',
     }));
     exportToCSV(rows, 'products');
   }
@@ -130,8 +135,17 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
             className="flex items-center gap-1.5 px-4 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg transition"
           >
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Export CSV</span>
+            <span className="hidden sm:inline">Export</span>
           </button>
+          {canEdit && (
+            <button
+              onClick={() => setShowImport(true)}
+              className="flex items-center gap-1.5 px-4 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg transition"
+            >
+              <Upload className="h-4 w-4" />
+              <span className="hidden sm:inline">Import</span>
+            </button>
+          )}
           {canEdit && (
             <button
               onClick={() => { setEditProduct(null); setShowModal(true); }}
@@ -190,7 +204,7 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium text-gray-900">{product.name}</p>
-                          <p className="text-xs text-gray-400">{product.sku}</p>
+                          <p className="text-xs text-gray-400">{product.sku}{product.barcode ? ` · ${product.barcode}` : ''}</p>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -273,6 +287,17 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
           product={adjustProduct}
           onClose={() => setAdjustProduct(null)}
           onAdjusted={onStockAdjusted}
+        />
+      )}
+      {showImport && (
+        <CSVImportModal
+          workspaceId={workspaceId}
+          categories={categories}
+          onClose={() => setShowImport(false)}
+          onImported={(imported) => {
+            setProducts((prev) => [...imported, ...prev]);
+            setShowImport(false);
+          }}
         />
       )}
     </div>

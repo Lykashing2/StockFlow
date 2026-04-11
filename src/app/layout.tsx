@@ -17,15 +17,22 @@ export const metadata: Metadata = {
     title: 'StockFlow',
   },
   applicationName: 'StockFlow',
-  keywords: ['inventory', 'stock management', 'warehouse', 'products', 'SaaS'],
-  authors: [{ name: 'StockFlow Team' }],
+  keywords: ['inventory management', 'stock tracking', 'warehouse management', 'inventory software', 'SaaS', 'product management', 'low stock alerts', 'business inventory', 'StockFlow'],
+  authors: [{ name: 'Phearun Lykashing' }],
+  creator: 'Phearun Lykashing',
   robots: 'index, follow',
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    url: 'https://stock-flow-six-vert.vercel.app',
     siteName: 'StockFlow',
-    title: 'StockFlow — Inventory Management',
-    description: 'Real-time inventory tracking for modern businesses.',
+    title: 'StockFlow — Free Inventory Management Software',
+    description: 'Track your stock, manage products, get low stock alerts, and grow your business. Free to start, no credit card required.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'StockFlow — Free Inventory Management Software',
+    description: 'Track your stock, manage products, get low stock alerts. Free to start.',
   },
 };
 

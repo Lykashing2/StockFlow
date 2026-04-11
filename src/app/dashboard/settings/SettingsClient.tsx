@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Building2, Loader2, Check } from 'lucide-react';
+import { User, Building2, Loader2, Check, ArrowUpRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn, slugify } from '@/lib/utils';
+import Link from 'next/link';
 import type { Profile, Workspace, UserRole } from '@/types';
 
 interface Props {
@@ -105,12 +106,17 @@ export function SettingsClient({ profile, workspace, userRole }: Props) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">Plan</label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span className="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold capitalize">
                 {workspace?.plan ?? 'free'}
               </span>
-              {workspace?.plan === 'free' && (
-                <span className="text-xs text-gray-400">Upgrade for more features</span>
+              {(!workspace?.plan || workspace.plan === 'free') && (
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition"
+                >
+                  Upgrade <ArrowUpRight className="h-3 w-3" />
+                </Link>
               )}
             </div>
           </div>

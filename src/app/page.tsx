@@ -23,6 +23,9 @@ export default function LandingPage() {
             <span className="text-lg font-bold">StockFlow</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/pricing" className="text-slate-300 hover:text-white text-sm font-medium transition">
+              Pricing
+            </Link>
             <Link href="/auth/login" className="text-slate-300 hover:text-white text-sm font-medium transition">
               Sign in
             </Link>

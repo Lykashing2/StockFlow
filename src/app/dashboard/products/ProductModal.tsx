@@ -67,34 +67,38 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
       description: data.description || null,
     };
 
-    if (isEdit) {
+    if (isEdit && product) {
       const { data: updated, error } = await supabase
         .from('products')
         .update(payload)
         .eq('id', product.id)
         .select('*, category:categories(*)')
         .single();
-      if (!error && updated) onSaved(updated as Product);
+      if (error) return;
+      if (updated) onSaved(updated as Product);
     } else {
       const { data: created, error } = await supabase
         .from('products')
         .insert(payload)
         .select('*, category:categories(*)')
         .single();
-      if (!error && created) {
-        // Log creation
+      if (error || !created) return;
+
+      // Log creation
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
         await supabase.from('inventory_logs').insert({
           workspace_id: workspaceId,
           product_id: created.id,
-          user_id: (await supabase.auth.getUser()).data.user!.id,
+          user_id: user.id,
           action: 'create',
           quantity_before: 0,
           quantity_after: created.quantity,
           quantity_change: created.quantity,
           note: 'Product created',
         });
-        onSaved(created as Product);
       }
+      onSaved(created as Product);
     }
   }
 

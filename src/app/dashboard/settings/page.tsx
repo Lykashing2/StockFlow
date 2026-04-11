@@ -9,14 +9,15 @@ export default async function SettingsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login');
 
-  const [{ data: profile }, { data: membership }] = await Promise.all([
+  const [{ data: profile }, { data: memberships }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('workspace_members')
       .select('role, workspace:workspaces(*)')
       .eq('user_id', user.id)
-      .limit(1)
-      .single(),
+      .limit(1),
   ]);
+
+  const membership = memberships?.[0];
 
   return (
     <DashboardShell title="Settings">

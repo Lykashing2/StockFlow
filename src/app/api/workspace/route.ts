@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, workspace_id: existing[0].workspace_id });
     }
 
-    // Create workspace
+    // Create workspace with admin client (bypasses RLS, sets owner_id explicitly)
     const { data: workspace, error: wsError } = await admin
       .from('workspaces')
       .insert({ name: wsName, slug, owner_id: user.id })
@@ -44,12 +44,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: wsError.message }, { status: 400 });
     }
 
-    // Add user as owner
+    // Add user as owner member
     const { error: memError } = await admin
       .from('workspace_members')
       .insert({ workspace_id: workspace.id, user_id: user.id, role: 'owner' });
 
     if (memError) {
+      // Rollback: delete the workspace if member insert fails
+      await admin.from('workspaces').delete().eq('id', workspace.id);
       return NextResponse.json({ error: memError.message }, { status: 400 });
     }
 

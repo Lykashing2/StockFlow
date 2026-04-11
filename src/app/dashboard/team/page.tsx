@@ -8,13 +8,13 @@ export default async function TeamPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login');
 
-  const { data: myMembership } = await supabase
+  const { data: myMemberships } = await supabase
     .from('workspace_members')
     .select('workspace_id, role')
     .eq('user_id', user.id)
-    .limit(1)
-    .single();
+    .limit(1);
 
+  const myMembership = myMemberships?.[0];
   if (!myMembership) redirect('/dashboard');
 
   const { data: members } = await supabase

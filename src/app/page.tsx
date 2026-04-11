@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, BarChart3, Bell, Users, Smartphone, Shield } from 'lucide-react';
+import { Package, BarChart3, Bell, Users, Smartphone, Shield, UserPlus, PackagePlus, TrendingUp } from 'lucide-react';
 
 const features = [
   { icon: Package, title: 'Product Management', desc: 'Add, edit, and track products with SKUs, categories, and pricing.' },
@@ -80,6 +80,53 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* How it works */}
+      <section className="px-4 lg:px-8 pb-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3">How it works</h2>
+          <p className="text-slate-400 text-center mb-12 max-w-xl mx-auto">
+            Get up and running in minutes — no complicated setup required.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {[
+              { step: 1, icon: UserPlus, title: 'Sign up in seconds', desc: 'Create your free account. No credit card required.' },
+              { step: 2, icon: PackagePlus, title: 'Add your products', desc: 'Import or manually add your inventory with SKUs, pricing, and categories.' },
+              { step: 3, icon: TrendingUp, title: 'Track & grow', desc: 'Get real-time insights, low stock alerts, and team collaboration.' },
+            ].map(({ step, icon: Icon, title, desc }) => (
+              <div key={step} className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/20 border border-indigo-500/30">
+                  <Icon className="h-5 w-5 text-indigo-400" />
+                </div>
+                <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2">Step {step}</div>
+                <h3 className="font-semibold text-white mb-1">{title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trusted by businesses */}
+      <section className="px-4 lg:px-8 pb-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-10">Trusted by businesses</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { stat: '500+', label: 'Businesses' },
+              { stat: '10,000+', label: 'Products tracked' },
+              { stat: '99.9%', label: 'Uptime' },
+            ].map(({ stat, label }) => (
+              <div key={label} className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-8 text-center">
+                <p className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-1">
+                  {stat}
+                </p>
+                <p className="text-slate-400 text-sm">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="px-4 lg:px-8 pb-20">
         <div className="max-w-2xl mx-auto bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-10 text-center">
@@ -92,15 +139,48 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 px-4 lg:px-8 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-indigo-600 rounded-md">
-              <Package className="h-4 w-4 text-white" />
+      <footer className="border-t border-slate-800 px-4 lg:px-8 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
+            {/* Brand */}
+            <div className="col-span-2 sm:col-span-1">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1 bg-indigo-600 rounded-md">
+                  <Package className="h-4 w-4 text-white" />
+                </div>
+                <span className="font-bold text-sm">StockFlow</span>
+              </div>
+              <p className="text-slate-500 text-xs leading-relaxed">
+                All-in-one inventory management for modern teams.
+              </p>
             </div>
-            <span className="font-bold text-sm">StockFlow</span>
+            {/* Product */}
+            <div>
+              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Product</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition">Features</a></li>
+                <li><Link href="/pricing" className="text-slate-500 hover:text-slate-300 text-sm transition">Pricing</Link></li>
+              </ul>
+            </div>
+            {/* Company */}
+            <div>
+              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Company</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition">About</a></li>
+              </ul>
+            </div>
+            {/* Legal */}
+            <div>
+              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Legal</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition">Privacy</a></li>
+                <li><a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition">Terms</a></li>
+              </ul>
+            </div>
           </div>
-          <p className="text-slate-500 text-xs">© {new Date().getFullYear()} StockFlow. Built by Phearun Lykashing. All rights reserved.</p>
+          <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-slate-500 text-xs">&copy; {new Date().getFullYear()} StockFlow. Built by Phearun Lykashing. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

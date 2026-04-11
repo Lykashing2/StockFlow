@@ -13,7 +13,13 @@
       "Bash(node scripts/convert-icons.js)",
       "Bash(curl -s -X POST https://mwuyiwbeysiadogofexg.supabase.co/rest/v1/rpc/ -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13dXlpd2JleXNpYWRvZ29mZXhnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTczMzE1NCwiZXhwIjoyMDkxMzA5MTU0fQ.XHwVMh9x6ymUT_IbcRibLll5YX8tw7FVb10SH667bqo' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13dXlpd2JleXNpYWRvZ29mZXhnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTczMzE1NCwiZXhwIjoyMDkxMzA5MTU0fQ.XHwVMh9x6ymUT_IbcRibLll5YX8tw7FVb10SH667bqo' -H 'Content-Type: application/json')",
       "Bash(npx supabase:*)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)"
     ]
   }
 }

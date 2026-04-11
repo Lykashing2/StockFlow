@@ -3,6 +3,7 @@
 import { Menu, Bell, Search } from 'lucide-react';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { getInitials } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -13,11 +14,11 @@ export function Header({ onMenuClick, title }: HeaderProps) {
   const { profile, workspace } = useWorkspace();
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
+    <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition"
+          className="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition"
         >
           <Menu className="h-5 w-5" />
         </button>

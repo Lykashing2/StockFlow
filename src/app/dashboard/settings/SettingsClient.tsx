@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Building2, Loader2, Check, ArrowUpRight } from 'lucide-react';
+import { User, Building2, Loader2, Check, ArrowUpRight, Lock, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn, slugify } from '@/lib/utils';
 import Link from 'next/link';
@@ -22,14 +22,25 @@ const profileSchema = z.object({
 const workspaceSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
 });
+const passwordSchema = z.object({
+  current_password: z.string().min(1, 'Current password is required'),
+  new_password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirm_password: z.string().min(1, 'Please confirm your new password'),
+}).refine((data) => data.new_password === data.confirm_password, {
+  message: 'Passwords do not match',
+  path: ['confirm_password'],
+});
 
 type ProfileForm = z.infer<typeof profileSchema>;
 type WorkspaceForm = z.infer<typeof workspaceSchema>;
+type PasswordForm = z.infer<typeof passwordSchema>;
 
 export function SettingsClient({ profile, workspace, userRole }: Props) {
   const supabase = createClient();
   const [profileSaved, setProfileSaved] = useState(false);
   const [wsSaved, setWsSaved] = useState(false);
+  const [pwSuccess, setPwSuccess] = useState(false);
+  const [pwError, setPwError] = useState<string | null>(null);
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -38,6 +49,10 @@ export function SettingsClient({ profile, workspace, userRole }: Props) {
   const wsForm = useForm<WorkspaceForm>({
     resolver: zodResolver(workspaceSchema),
     defaultValues: { name: workspace?.name ?? '' },
+  });
+  const pwForm = useForm<PasswordForm>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: { current_password: '', new_password: '', confirm_password: '' },
   });
 
   async function saveProfile(data: ProfileForm) {
@@ -53,6 +68,31 @@ export function SettingsClient({ profile, workspace, userRole }: Props) {
     }).eq('id', workspace!.id);
     setWsSaved(true);
     setTimeout(() => setWsSaved(false), 3000);
+  }
+
+  async function changePassword(data: PasswordForm) {
+    setPwError(null);
+    setPwSuccess(false);
+
+    // Verify current password by re-authenticating
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: profile?.email ?? '',
+      password: data.current_password,
+    });
+    if (signInError) {
+      setPwError('Current password is incorrect.');
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: data.new_password });
+    if (error) {
+      setPwError(error.message);
+      return;
+    }
+
+    setPwSuccess(true);
+    pwForm.reset();
+    setTimeout(() => setPwSuccess(false), 3000);
   }
 
   const canEditWorkspace = userRole === 'owner';

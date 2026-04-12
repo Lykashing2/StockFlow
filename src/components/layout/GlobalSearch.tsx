@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Search, Package } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -17,7 +17,7 @@ interface Result {
 
 export function GlobalSearch() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const { workspace } = useWorkspace();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Result[]>([]);

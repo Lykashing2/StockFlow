@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown, Download, Upload } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { formatCurrency, getStockStatus, cn } from '@/lib/utils';
 import { exportToCSV } from '@/lib/csv';
-import { ProductModal } from './ProductModal';
-import { StockAdjustModal } from './StockAdjustModal';
-import { CSVImportModal } from './CSVImportModal';
+
+const ProductModal = lazy(() => import('./ProductModal').then(m => ({ default: m.ProductModal })));
+const StockAdjustModal = lazy(() => import('./StockAdjustModal').then(m => ({ default: m.StockAdjustModal })));
+const CSVImportModal = lazy(() => import('./CSVImportModal').then(m => ({ default: m.CSVImportModal })));
 import type { Product, Category, UserRole } from '@/types';
 
 interface Props {
@@ -204,7 +206,7 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {product.image_url ? (
-                            <img src={product.image_url} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+                            <Image src={product.image_url} alt={product.name} width={36} height={36} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
                           ) : (
                             <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                               <Package className="h-4 w-4 text-gray-300" />
@@ -281,34 +283,36 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
         </div>
       </div>
 
-      {/* Modals */}
-      {showModal && (
-        <ProductModal
-          product={editProduct}
-          categories={categories}
-          workspaceId={workspaceId}
-          onClose={() => { setShowModal(false); setEditProduct(null); }}
-          onSaved={onSaved}
-        />
-      )}
-      {adjustProduct && (
-        <StockAdjustModal
-          product={adjustProduct}
-          onClose={() => setAdjustProduct(null)}
-          onAdjusted={onStockAdjusted}
-        />
-      )}
-      {showImport && (
-        <CSVImportModal
-          workspaceId={workspaceId}
-          categories={categories}
-          onClose={() => setShowImport(false)}
-          onImported={(imported) => {
-            setProducts((prev) => [...imported, ...prev]);
-            setShowImport(false);
-          }}
-        />
-      )}
+      {/* Modals — lazy loaded */}
+      <Suspense fallback={null}>
+        {showModal && (
+          <ProductModal
+            product={editProduct}
+            categories={categories}
+            workspaceId={workspaceId}
+            onClose={() => { setShowModal(false); setEditProduct(null); }}
+            onSaved={onSaved}
+          />
+        )}
+        {adjustProduct && (
+          <StockAdjustModal
+            product={adjustProduct}
+            onClose={() => setAdjustProduct(null)}
+            onAdjusted={onStockAdjusted}
+          />
+        )}
+        {showImport && (
+          <CSVImportModal
+            workspaceId={workspaceId}
+            categories={categories}
+            onClose={() => setShowImport(false)}
+            onImported={(imported) => {
+              setProducts((prev) => [...imported, ...prev]);
+              setShowImport(false);
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

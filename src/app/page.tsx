@@ -23,6 +23,9 @@ export default function LandingPage() {
             <span className="text-lg font-bold">StockFlow</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/demo" className="text-slate-300 hover:text-white text-sm font-medium transition">
+              Demo
+            </Link>
             <Link href="/pricing" className="text-slate-300 hover:text-white text-sm font-medium transition">
               Pricing
             </Link>
@@ -59,8 +62,8 @@ export default function LandingPage() {
             <Link href="/auth/signup" className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition text-base">
               Start free — no card required
             </Link>
-            <Link href="/auth/login" className="px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition text-base border border-slate-700">
-              Sign in
+            <Link href="/demo" className="px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition text-base border border-slate-700">
+              Try live demo
             </Link>
           </div>
         </div>

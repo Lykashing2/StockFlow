@@ -202,9 +202,18 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
                   return (
                     <tr key={product.id} className="hover:bg-gray-50 transition">
                       <td className="px-4 py-3">
-                        <div>
-                          <p className="font-medium text-gray-900">{product.name}</p>
-                          <p className="text-xs text-gray-400">{product.sku}{product.barcode ? ` · ${product.barcode}` : ''}</p>
+                        <div className="flex items-center gap-3">
+                          {product.image_url ? (
+                            <img src={product.image_url} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+                          ) : (
+                            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                              <Package className="h-4 w-4 text-gray-300" />
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium text-gray-900">{product.name}</p>
+                            <p className="text-xs text-gray-400">{product.sku}{product.barcode ? ` · ${product.barcode}` : ''}</p>
+                          </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">

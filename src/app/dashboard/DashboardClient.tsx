@@ -3,6 +3,7 @@
 import { Package, DollarSign, AlertTriangle, TrendingDown } from 'lucide-react';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { StockChart } from '@/components/dashboard/StockChart';
+import { OnboardingTour } from '@/components/OnboardingTour';
 import { formatCurrency, formatDateTime, getStockStatus, getChangeColor } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -28,6 +29,7 @@ interface Props {
 export function DashboardClient({ stats, recentLogs, topProducts, chartData, lowStockProducts }: Props) {
   return (
     <div className="space-y-6">
+      <OnboardingTour />
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatsCard

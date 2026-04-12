@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, ImagePlus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn, generateSKU } from '@/lib/utils';
 import type { Product, Category } from '@/types';
@@ -36,6 +36,9 @@ interface Props {
 export function ProductModal({ product, categories, workspaceId, onClose, onSaved }: Props) {
   const supabase = createClient();
   const isEdit = !!product;
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(product?.image_url ?? null);
 
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } =
     useForm<FormData>({
@@ -61,6 +64,23 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
     if (!isEdit) setValue('sku', generateSKU('NEW'));
   }, [isEdit, setValue]);
 
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  async function uploadImage(productId: string): Promise<string | null> {
+    if (!imageFile) return null;
+    const ext = imageFile.name.split('.').pop() ?? 'jpg';
+    const path = `${workspaceId}/${productId}.${ext}`;
+    const { error } = await supabase.storage.from('product-images').upload(path, imageFile, { upsert: true });
+    if (error) { console.error('Upload error:', error); return null; }
+    const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(path);
+    return publicUrl;
+  }
+
   async function onSubmit(data: FormData) {
     const payload = {
       ...data,
@@ -71,9 +91,11 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
     };
 
     if (isEdit && product) {
+      const imageUrl = await uploadImage(product.id);
+      const updatePayload = imageUrl ? { ...payload, image_url: imageUrl } : payload;
       const { data: updated, error } = await supabase
         .from('products')
-        .update(payload)
+        .update(updatePayload)
         .eq('id', product.id)
         .select('*, category:categories(*)')
         .single();
@@ -86,6 +108,13 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
         .select('*, category:categories(*)')
         .single();
       if (error || !created) return;
+
+      // Upload image for new product
+      const imageUrl = await uploadImage(created.id);
+      if (imageUrl) {
+        await supabase.from('products').update({ image_url: imageUrl }).eq('id', created.id);
+        created.image_url = imageUrl;
+      }
 
       // Log creation
       const { data: { user } } = await supabase.auth.getUser();
@@ -120,6 +149,26 @@ export function ProductModal({ product, categories, workspaceId, onClose, onSave
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+          {/* Image upload */}
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 hover:border-indigo-400 flex items-center justify-center overflow-hidden transition flex-shrink-0"
+            >
+              {imagePreview ? (
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <ImagePlus className="h-6 w-6 text-gray-300" />
+              )}
+            </button>
+            <div>
+              <p className="text-xs font-medium text-gray-700">Product Image</p>
+              <p className="text-xs text-gray-400">Click to upload (JPG, PNG, WebP, max 5MB)</p>
+            </div>
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-xs font-medium text-gray-700 mb-1">Product Name *</label>

@@ -14,6 +14,8 @@ import {
   ChevronDown,
   Check,
   MessageSquare,
+  Tag,
+  FileBarChart,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -24,8 +26,10 @@ import { useState } from 'react';
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/products', label: 'Products', icon: Package },
+  { href: '/dashboard/categories', label: 'Categories', icon: Tag },
   { href: '/dashboard/inventory', label: 'Inventory', icon: ClipboardList },
   { href: '/dashboard/alerts', label: 'Low Stock Alerts', icon: AlertTriangle },
+  { href: '/dashboard/reports', label: 'Reports', icon: FileBarChart },
   { href: '/dashboard/team', label: 'Team', icon: Users },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];

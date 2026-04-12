@@ -52,7 +52,7 @@ Some things I'm proud of:
 
 I'd love your feedback on what to add next. I'm actively building and shipping new features every week.
 
-Try it: [your-vercel-url]
+Try it: https://stock-flow-2fqn.vercel.app
 
 ## Gallery images to prepare
 1. Dashboard screenshot (light mode)

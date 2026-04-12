@@ -19,7 +19,7 @@ Hey everyone! I'm a student developer from Cambodia and I just launched **StockF
 
 **Tech stack:** Next.js 14, Supabase, TypeScript, Tailwind CSS, deployed on Vercel
 
-**Live:** [your-vercel-url]
+**Live:** https://stock-flow-2fqn.vercel.app
 
 It's completely free right now. I built this to learn full-stack development and to solve a real problem — small shops near me still track inventory on paper or basic spreadsheets.
 
@@ -48,7 +48,7 @@ Just shipped my first real project and wanted to share. It's an inventory manage
 
 Would appreciate any code review or UX feedback. I'm still learning!
 
-**Live:** [your-vercel-url]
+**Live:** https://stock-flow-2fqn.vercel.app
 **GitHub:** github.com/Lykashing2/StockFlow
 
 ---
@@ -72,6 +72,6 @@ If you're currently using spreadsheets or paper to track stock, this might save 
 
 It's 100% free. No credit card, no trial that expires. I'm a student building this to learn, and I want it to actually be useful for real businesses.
 
-Try it here: [your-vercel-url]
+Try it here: https://stock-flow-2fqn.vercel.app
 
 I'd love to hear what features would make this more useful for your business!

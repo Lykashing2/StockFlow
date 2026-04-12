@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://stock-flow-six-vert.vercel.app',
+    url: 'https://stock-flow-2fqn.vercel.app',
     siteName: 'StockFlow',
     title: 'StockFlow — Free Inventory Management Software',
     description: 'Track your stock, manage products, get low stock alerts, and grow your business. Free to start, no credit card required.',

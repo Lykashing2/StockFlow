@@ -66,7 +66,7 @@ What's next:
 
 If you run a small business or know someone who does, try it free:
 
-[your-vercel-url]
+https://stock-flow-2fqn.vercel.app
 
 ## Tweet 7
 

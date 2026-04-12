@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard/', '/api/'],
     },
-    sitemap: 'https://stock-flow-six-vert.vercel.app/sitemap.xml',
+    sitemap: 'https://stock-flow-2fqn.vercel.app/sitemap.xml',
   };
 }

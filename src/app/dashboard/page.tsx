@@ -44,7 +44,7 @@ export default async function DashboardPage() {
       .select('*, product:products(name, sku), profile:profiles(full_name, email)')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false })
-      .limit(20),
+      .limit(200),
   ]);
 
   const products = productsRes.data ?? [];
@@ -76,6 +76,7 @@ export default async function DashboardPage() {
       <DashboardClient
         stats={{ totalProducts: products.length, totalValue, lowStockCount, outOfStockCount }}
         recentLogs={logs.slice(0, 8)}
+        allLogs={logs}
         topProducts={[...products].sort((a, b) => b.quantity - a.quantity).slice(0, 5)}
         chartData={chartData}
         lowStockProducts={products.filter((p) => p.quantity <= p.low_stock_threshold).slice(0, 5)}

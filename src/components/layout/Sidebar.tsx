@@ -18,6 +18,7 @@ import {
   FileBarChart,
   Truck,
   ShoppingCart,
+  ClipboardCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -32,6 +33,7 @@ const navItems = [
   { href: '/dashboard/inventory', label: 'Inventory', icon: ClipboardList },
   { href: '/dashboard/suppliers', label: 'Suppliers', icon: Truck },
   { href: '/dashboard/purchase-orders', label: 'Purchase Orders', icon: ShoppingCart },
+  { href: '/dashboard/stocktake', label: 'Stocktake', icon: ClipboardCheck },
   { href: '/dashboard/alerts', label: 'Low Stock Alerts', icon: AlertTriangle },
   { href: '/dashboard/reports', label: 'Reports', icon: FileBarChart },
   { href: '/dashboard/team', label: 'Team', icon: Users },

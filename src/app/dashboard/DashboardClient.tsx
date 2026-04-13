@@ -1,7 +1,7 @@
 'use client';
 
-import { lazy, Suspense } from 'react';
-import { Package, DollarSign, AlertTriangle, TrendingDown } from 'lucide-react';
+import { lazy, Suspense, useState, useMemo } from 'react';
+import { Package, DollarSign, AlertTriangle, TrendingDown, Calendar } from 'lucide-react';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { StockChart } from '@/components/dashboard/StockChart';
 import { formatCurrency, formatDateTime, getStockStatus, getChangeColor } from '@/lib/utils';
@@ -20,18 +20,62 @@ interface LogWithRelations {
   profile?: { full_name: string | null; email: string };
 }
 
+type Range = '7d' | '14d' | '30d';
+
 interface Props {
   stats: { totalProducts: number; totalValue: number; lowStockCount: number; outOfStockCount: number };
   recentLogs: LogWithRelations[];
   topProducts: Product[];
   chartData: { date: string; added: number; removed: number }[];
   lowStockProducts: Product[];
+  allLogs?: LogWithRelations[];
 }
 
-export function DashboardClient({ stats, recentLogs, topProducts, chartData, lowStockProducts }: Props) {
+export function DashboardClient({ stats, recentLogs, topProducts, chartData: defaultChart, lowStockProducts, allLogs }: Props) {
+  const [range, setRange] = useState<Range>('7d');
+  const logs = allLogs ?? recentLogs;
+
+  const chartData = useMemo(() => {
+    const days = range === '7d' ? 7 : range === '14d' ? 14 : 30;
+    const now = new Date();
+    return Array.from({ length: days }, (_, i) => {
+      const d = new Date(now);
+      d.setDate(d.getDate() - (days - 1 - i));
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const dayLogs = logs.filter((l) => {
+        const ld = new Date(l.created_at);
+        return ld.toDateString() === d.toDateString();
+      });
+      return {
+        date: dateStr,
+        added: dayLogs.filter((l) => l.action === 'add').reduce((s, l) => s + Math.abs(l.quantity_change), 0),
+        removed: dayLogs.filter((l) => l.action === 'remove').reduce((s, l) => s + Math.abs(l.quantity_change), 0),
+      };
+    });
+  }, [logs, range]);
+
   return (
     <div className="space-y-6">
       <Suspense fallback={null}><OnboardingTour /></Suspense>
+
+      {/* Date range picker */}
+      <div className="flex items-center justify-end gap-1">
+        <Calendar className="h-4 w-4 text-gray-400 mr-1" />
+        {(['7d', '14d', '30d'] as Range[]).map((r) => (
+          <button
+            key={r}
+            onClick={() => setRange(r)}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition ${
+              range === r
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+            }`}
+          >
+            {r === '7d' ? '7 Days' : r === '14d' ? '14 Days' : '30 Days'}
+          </button>
+        ))}
+      </div>
+
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatsCard

@@ -1,32 +1,36 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/DashboardShell';
-import { InventoryClient } from './InventoryClient';
+import { StocktakeClient } from './StocktakeClient';
 
-export default async function InventoryPage() {
+export default async function StocktakePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login');
 
   const { data: memberships } = await supabase
     .from('workspace_members')
-    .select('workspace_id')
+    .select('workspace_id, role')
     .eq('user_id', user.id)
     .limit(1);
 
   const membership = memberships?.[0];
   if (!membership) redirect('/dashboard');
+  if (membership.role === 'viewer') redirect('/dashboard');
 
-  const { data: logs } = await supabase
-    .from('inventory_logs')
-    .select('*, product:products(id, name, sku, unit), profile:profiles(full_name, email)')
+  const { data: products } = await supabase
+    .from('products')
+    .select('id, name, sku, quantity, unit, low_stock_threshold, category:categories(name)')
     .eq('workspace_id', membership.workspace_id)
-    .order('created_at', { ascending: false })
-    .limit(500);
+    .eq('is_active', true)
+    .order('name');
 
   return (
-    <DashboardShell title="Inventory Logs">
-      <InventoryClient logs={logs ?? []} />
+    <DashboardShell title="Stocktake">
+      <StocktakeClient
+        products={products ?? []}
+        workspaceId={membership.workspace_id}
+      />
     </DashboardShell>
   );
 }

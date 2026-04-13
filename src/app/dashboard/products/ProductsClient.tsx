@@ -3,7 +3,8 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown, Download, Upload } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, ArrowUpDown, Download, Upload, Eye } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { formatCurrency, getStockStatus, cn } from '@/lib/utils';
 import { exportToCSV } from '@/lib/csv';
@@ -36,6 +37,9 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
   const [adjustProduct, setAdjustProduct] = useState<Product | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showImport, setShowImport] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 25;
 
   const canEdit = userRole !== 'viewer';
 
@@ -56,6 +60,14 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
     });
     return list;
   }, [products, search, filterCategory, filterStatus, sortKey, sortAsc]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  // Reset page when filters change
+  const filterKey = `${search}${filterCategory}${filterStatus}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) { setPrevFilterKey(filterKey); setPage(0); }
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) setSortAsc(!sortAsc);
@@ -160,8 +172,44 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
         </div>
       </div>
 
-      {/* Summary */}
-      <p className="text-sm text-gray-500">{filtered.length} product{filtered.length !== 1 ? 's' : ''}</p>
+      {/* Summary + batch actions */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-500">{filtered.length} product{filtered.length !== 1 ? 's' : ''}</p>
+        {selectedIds.size > 0 && canEdit && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-indigo-600 font-medium">{selectedIds.size} selected</span>
+            <button
+              onClick={async () => {
+                if (!confirm(`Delete ${selectedIds.size} product(s)? This cannot be undone.`)) return;
+                await Promise.all(
+                  Array.from(selectedIds).map((id) =>
+                    supabase.from('products').update({ is_active: false }).eq('id', id)
+                  )
+                );
+                setProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+                setSelectedIds(new Set());
+              }}
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition"
+            >
+              <Trash2 className="h-3.5 w-3.5 inline mr-1" />Delete
+            </button>
+            <button
+              onClick={() => {
+                const rows = products.filter((p) => selectedIds.has(p.id)).map((p) => ({
+                  name: p.name, sku: p.sku, category: p.category?.name ?? '', quantity: p.quantity,
+                  unit: p.unit, cost_price: p.cost_price, selling_price: p.selling_price,
+                  low_stock_threshold: p.low_stock_threshold, barcode: p.barcode ?? '',
+                }));
+                exportToCSV(rows, 'selected-products');
+              }}
+              className="px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition"
+            >
+              <Download className="h-3.5 w-3.5 inline mr-1" />Export
+            </button>
+            <button onClick={() => setSelectedIds(new Set())} className="text-xs text-gray-500 hover:text-gray-700 transition">Clear</button>
+          </div>
+        )}
+      </div>
 
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -169,6 +217,20 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
+                {canEdit && (
+                  <th className="px-4 py-3 w-10">
+                    <input
+                      type="checkbox"
+                      checked={paginated.length > 0 && paginated.every((p) => selectedIds.has(p.id))}
+                      onChange={(e) => {
+                        const next = new Set(selectedIds);
+                        paginated.forEach((p) => e.target.checked ? next.add(p.id) : next.delete(p.id));
+                        setSelectedIds(next);
+                      }}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                  </th>
+                )}
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                   <button className="flex items-center gap-1" onClick={() => toggleSort('name')}>
                     Product <ArrowUpDown className="h-3 w-3" />
@@ -191,18 +253,32 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
+                  <td colSpan={canEdit ? 8 : 7} className="px-4 py-12 text-center text-gray-400">
                     <Package className="h-10 w-10 mx-auto mb-2 opacity-30" />
                     No products found.
                   </td>
                 </tr>
               ) : (
-                filtered.map((product) => {
+                paginated.map((product) => {
                   const status = getStockStatus(product.quantity, product.low_stock_threshold);
                   return (
-                    <tr key={product.id} className="hover:bg-gray-50 transition">
+                    <tr key={product.id} className={cn('hover:bg-gray-50 transition', selectedIds.has(product.id) && 'bg-indigo-50')}>
+                      {canEdit && (
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(product.id)}
+                            onChange={(e) => {
+                              const next = new Set(selectedIds);
+                              e.target.checked ? next.add(product.id) : next.delete(product.id);
+                              setSelectedIds(next);
+                            }}
+                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                        </td>
+                      )}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {product.image_url ? (
@@ -246,6 +322,13 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
+                          <Link
+                            href={`/dashboard/products/${product.id}`}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition"
+                            title="View details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
                           {canEdit && (
                             <>
                               <button
@@ -282,6 +365,46 @@ export function ProductsClient({ initialProducts, categories, workspaceId, userR
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Previous
+            </button>
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              const p = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={cn(
+                    'w-8 h-8 text-sm rounded-lg transition',
+                    p === page ? 'bg-indigo-600 text-white' : 'hover:bg-gray-50 text-gray-700'
+                  )}
+                >
+                  {p + 1}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              disabled={page >= totalPages - 1}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modals — lazy loaded */}
       <Suspense fallback={null}>

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Package, ArrowUp, ArrowDown, RefreshCw, Plus, Trash2 } from 'lucide-react';
+import { Search, Package, ArrowUp, ArrowDown, RefreshCw, Plus, Trash2, Download } from 'lucide-react';
 import { formatDateTime, getChangeColor, cn } from '@/lib/utils';
+import { exportToCSV } from '@/lib/csv';
 import type { InventoryLog, LogAction } from '@/types';
 
 interface Props {
@@ -30,6 +31,8 @@ const ACTION_COLORS: Record<LogAction, string> = {
 export function InventoryClient({ logs }: Props) {
   const [search, setSearch] = useState('');
   const [filterAction, setFilterAction] = useState('all');
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 25;
 
   const filtered = useMemo(() => {
     let list = [...logs];
@@ -44,6 +47,28 @@ export function InventoryClient({ logs }: Props) {
     if (filterAction !== 'all') list = list.filter((l) => l.action === filterAction);
     return list;
   }, [logs, search, filterAction]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  const filterKey = `${search}${filterAction}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) { setPrevFilterKey(filterKey); setPage(0); }
+
+  function handleExport() {
+    const rows = filtered.map((l) => ({
+      action: l.action,
+      product: l.product?.name ?? '',
+      sku: l.product?.sku ?? '',
+      before: l.quantity_before,
+      change: l.quantity_change,
+      after: l.quantity_after,
+      note: l.note ?? '',
+      user: l.profile?.full_name ?? l.profile?.email ?? '',
+      date: l.created_at,
+    }));
+    exportToCSV(rows, 'inventory-log');
+  }
 
   return (
     <div className="space-y-4">
@@ -71,6 +96,13 @@ export function InventoryClient({ logs }: Props) {
           <option value="update">Update</option>
           <option value="delete">Delete</option>
         </select>
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-1.5 px-4 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg transition"
+        >
+          <Download className="h-4 w-4" />
+          <span className="hidden sm:inline">Export CSV</span>
+        </button>
       </div>
 
       <p className="text-sm text-gray-500">{filtered.length} log{filtered.length !== 1 ? 's' : ''}</p>
@@ -91,7 +123,7 @@ export function InventoryClient({ logs }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.length === 0 ? (
+              {paginated.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
                     <Package className="h-10 w-10 mx-auto mb-2 opacity-30" />
@@ -99,7 +131,7 @@ export function InventoryClient({ logs }: Props) {
                   </td>
                 </tr>
               ) : (
-                filtered.map((log) => {
+                paginated.map((log) => {
                   const ActionIcon = ACTION_ICONS[log.action] ?? RefreshCw;
                   const actionColor = ACTION_COLORS[log.action] ?? 'text-gray-500 bg-gray-100';
                   return (
@@ -136,6 +168,46 @@ export function InventoryClient({ logs }: Props) {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Previous
+            </button>
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              const p = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={cn(
+                    'w-8 h-8 text-sm rounded-lg transition',
+                    p === page ? 'bg-indigo-600 text-white' : 'hover:bg-gray-50 text-gray-700'
+                  )}
+                >
+                  {p + 1}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              disabled={page >= totalPages - 1}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

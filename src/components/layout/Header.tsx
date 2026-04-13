@@ -1,10 +1,11 @@
 'use client';
 
-import { Menu, Bell } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { getInitials } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
+import { NotificationCenter } from '@/components/NotificationCenter';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -33,11 +34,7 @@ export function Header({ onMenuClick, title }: HeaderProps) {
 
         <ThemeToggle />
 
-        {/* Notifications */}
-        <button className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+        <NotificationCenter />
 
         {/* Avatar */}
         <div className="flex items-center gap-2 ml-1">

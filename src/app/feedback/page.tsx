@@ -50,21 +50,24 @@ export default function FeedbackPage() {
       err ? 'border-red-400' : 'border-slate-700');
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+      <div className="fixed inset-0 bg-grid opacity-[0.03] pointer-events-none" />
+      <div className="hero-glow animate-glow" />
+
       {/* Nav */}
-      <nav className="border-b border-slate-800 px-4 lg:px-8">
+      <nav className="relative z-10 border-b border-white/5 px-4 lg:px-8">
         <div className="max-w-6xl mx-auto h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-indigo-600 rounded-lg">
+            <div className="p-1.5 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-600/25">
               <Package className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-bold">StockFlow</span>
+            <span className="text-lg font-bold tracking-tight">StockFlow</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/pricing" className="text-slate-300 hover:text-white text-sm font-medium transition">
+            <Link href="/pricing" className="text-slate-400 hover:text-white text-sm font-medium transition">
               Pricing
             </Link>
-            <Link href="/auth/login" className="text-slate-300 hover:text-white text-sm font-medium transition">
+            <Link href="/auth/login" className="text-slate-400 hover:text-white text-sm font-medium transition">
               Sign in
             </Link>
           </div>

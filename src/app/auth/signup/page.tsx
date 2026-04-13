@@ -65,8 +65,9 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md w-full">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 relative">
+        <div className="auth-glow" />
+        <div className="bg-white rounded-2xl shadow-2xl shadow-black/20 p-8 text-center max-w-md w-full relative z-10 animate-scale-in">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-emerald-600" />
           </div>
@@ -80,19 +81,21 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-8 relative">
+      <div className="auth-glow" />
+      <div className="fixed inset-0 bg-grid opacity-[0.03] pointer-events-none" />
+      <div className="w-full max-w-md relative z-10 animate-fade-up">
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-indigo-600 rounded-xl">
+            <div className="p-2 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-600/25">
               <Package className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">StockFlow</span>
+            <span className="text-2xl font-bold text-white tracking-tight">StockFlow</span>
           </div>
           <p className="text-slate-400 text-sm">Create your free account</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl shadow-black/20 p-8">
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
               {error}

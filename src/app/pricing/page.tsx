@@ -4,21 +4,24 @@ import { PricingCards } from './PricingCards';
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+      <div className="fixed inset-0 bg-grid animate-grid-fade pointer-events-none" />
+      <div className="hero-glow animate-glow" />
+
       {/* Nav */}
-      <nav className="border-b border-slate-800 px-4 lg:px-8">
+      <nav className="relative z-10 border-b border-white/5 px-4 lg:px-8">
         <div className="max-w-6xl mx-auto h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-indigo-600 rounded-lg">
+            <div className="p-1.5 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-600/25">
               <Package className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-bold">StockFlow</span>
+            <span className="text-lg font-bold tracking-tight">StockFlow</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/auth/login" className="text-slate-300 hover:text-white text-sm font-medium transition">
+            <Link href="/auth/login" className="text-slate-400 hover:text-white text-sm font-medium transition">
               Sign in
             </Link>
-            <Link href="/auth/signup" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg transition">
+            <Link href="/auth/signup" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg transition shadow-lg shadow-indigo-600/25">
               Get started
             </Link>
           </div>
@@ -26,8 +29,8 @@ export default function PricingPage() {
       </nav>
 
       {/* Header */}
-      <section className="px-4 lg:px-8 pt-16 pb-12 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4">Simple, transparent pricing</h1>
+      <section className="relative z-10 px-4 lg:px-8 pt-16 pb-12 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight animate-fade-up">Simple, transparent pricing</h1>
         <p className="text-slate-400 text-lg max-w-xl mx-auto">
           Start free. Upgrade when you need more power. No hidden fees.
         </p>

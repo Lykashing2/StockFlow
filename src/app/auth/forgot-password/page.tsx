@@ -30,8 +30,10 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 relative">
+      <div className="auth-glow" />
+      <div className="fixed inset-0 bg-grid opacity-[0.03] pointer-events-none" />
+      <div className="w-full max-w-md relative z-10 animate-fade-up">
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center gap-2 mb-2">
             <div className="p-2 bg-indigo-600 rounded-xl"><Package className="h-6 w-6 text-white" /></div>
